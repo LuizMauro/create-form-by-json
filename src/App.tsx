@@ -1,4 +1,5 @@
-import Form, { IFormInput } from "./component/Form";
+import { IFormInput, FormComponent } from "./component/Form";
+import * as Yup from "yup";
 
 const inputs: IFormInput[] = [
   {
@@ -7,14 +8,6 @@ const inputs: IFormInput[] = [
     label: "Seu Nome",
     name: "name",
     placeholder: "Digite seu name",
-    validation: (e) => {
-      if (e.length <= 3) {
-        return {
-          error: true,
-          message: "invalid",
-        };
-      }
-    },
   },
   {
     id: "IputEmail",
@@ -34,16 +27,18 @@ const inputs: IFormInput[] = [
     inputType: "checkbox",
     label: "Receber notificações?",
     name: "notification",
-    valueInit: true,
+    valueInit: false,
   },
-
   {
     id: "SelectTeste",
     inputType: "select",
     label: "Escolha uma opção",
     name: "option",
-    valueInit: "Option2",
     options: [
+      {
+        label: "",
+        value: "",
+      },
       {
         label: "Option1",
         value: "Option1",
@@ -56,11 +51,24 @@ const inputs: IFormInput[] = [
   },
 ];
 
+const validationSchema = Yup.object({
+  name: Yup.string().required("Campo Obrigatorio"),
+  email: Yup.string()
+    .email("Digite um e-mail valido")
+    .required("Campo Obrigatorio"),
+  date: Yup.string().required("Campo obrigatório"),
+  notification: Yup.boolean().oneOf([true], "Aceite receber as notificações"),
+  option: Yup.string().required("Campo obrigatório"),
+  teste: Yup.string().required("Campo obrigatório"),
+});
+
 function App() {
   return (
-    <>
-      <Form inputs={inputs} onSubmit={(values: any) => console.log(values)} />
-    </>
+    <FormComponent
+      inputs={inputs}
+      onSubmit={(values: any) => console.log(values)}
+      validationScheam={validationSchema}
+    />
   );
 }
 
